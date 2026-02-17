@@ -6,10 +6,10 @@ import TableSearch from "@/components/TableSearch";
 import { classesData, role } from "@/lib/data";
 import { useAppSelector } from "@/store/hooks";
 import { SlidersHorizontal, SortDesc } from "lucide-react";
-;
 
 
 
+ 
 
 type Class = {
   id: number;

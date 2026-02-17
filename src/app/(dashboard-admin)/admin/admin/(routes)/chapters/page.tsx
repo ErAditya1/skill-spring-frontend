@@ -4,7 +4,6 @@ import BlogPostForm from '@/app/(dashboard)/(routes)/(Post)/components/PostForm'
 import PostCard from '@/components/PostCard'
 import { AxiosError } from 'axios'
 import React, { useEffect, useState } from 'react'
-import VideoCard from '../../../(courses)/components/VideoCard'
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -24,6 +23,7 @@ import { videoSchema } from '@/schemas/videoSchema';
 import ValidatedImage from '@/components/ValidatedImage';
 import { toast } from '@/components/ui/use-toast';
 import { HoverEffect } from '@/components/ui/card-hover-effect'
+import VideoCard from '@/app/(dashboard)/(routes)/(courses)/components/VideoCard'
 
 
 function page() {

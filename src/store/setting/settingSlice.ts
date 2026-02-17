@@ -1,29 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface SettingInterface {
-  isSideBar: boolean;
-}
-
-
-
-const initialState: SettingInterface = {
-  isSideBar: false,
+const initialState = {
+  isSideBar: true,
 };
 
 const settingSlice = createSlice({
   name: "setting",
   initialState,
   reducers: {
-    
-    handleSidebar(state, actions){
-      
-      state.isSideBar = actions.payload;
+    handleSidebar: (state, action) => {
+      state.isSideBar = action.payload;
     },
-    
-    
+    toggleSidebar: (state) => {
+      state.isSideBar = !state.isSideBar;
+    },
   },
 });
 
-export const { handleSidebar} = settingSlice.actions;
-
+export const { handleSidebar, toggleSidebar } = settingSlice.actions;
 export default settingSlice.reducer;

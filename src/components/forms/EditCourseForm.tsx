@@ -9,14 +9,14 @@ import api from '@/api'
 import { toast } from '@/components/ui/use-toast'
 import { ApiResponse } from '@/types/ApiResponse'
 
-import TitleForm from '@/app/(dashboard)/(routes)/(courses)/components/TitleForm'
-import DescriptionForm from '@/app/(dashboard)/(routes)/(courses)/components/DescriptionForm'
-import ThumbnailForm from '@/app/(dashboard)/(routes)/(courses)/components/ThumbnailForm'
-import CategoryForm from '@/app/(dashboard)/(routes)/(courses)/components/LanguageForm'
-import { DatePickerWithRange } from '@/app/(dashboard)/(routes)/(courses)/components/DurationForm'
-import PriceForm from '@/app/(dashboard)/(routes)/(courses)/components/PriceForm'
-import ChapterForm from '@/app/(dashboard)/(routes)/(courses)/components/chapter/ChaptersForm'
-import ChapterList from '@/app/(dashboard)/(routes)/(courses)/components/chapter/ChapterList'
+import TitleForm from '@/app/dashboard/(routes)/(courses)/components/TitleForm'
+import DescriptionForm from '@/app/dashboard/(routes)/(courses)/components/DescriptionForm'
+import ThumbnailForm from '@/app/dashboard/(routes)/(courses)/components/ThumbnailForm'
+import CategoryForm from '@/app/dashboard/(routes)/(courses)/components/LanguageForm'
+import { DatePickerWithRange } from '@/app/dashboard/(routes)/(courses)/components/DurationForm'
+import PriceForm from '@/app/dashboard/(routes)/(courses)/components/PriceForm'
+import ChapterForm from '@/app/dashboard/(routes)/(courses)/components/chapter/ChaptersForm'
+import ChapterList from '@/app/dashboard/(routes)/(courses)/components/chapter/ChapterList'
 
 function EditCourse() {
 

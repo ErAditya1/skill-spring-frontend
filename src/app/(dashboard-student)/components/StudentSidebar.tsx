@@ -50,8 +50,13 @@ export default function StudentSidebar() {
       icon: <DashboardRoundedIcon />,
     },
     {
-      label: "My Courses",
+      label: "Courses",
       href: "/student/courses",
+      icon: <CastForEducationIcon />,
+    },
+    {
+      label: "My Courses",
+      href: "/student/my-courses",
       icon: <CastForEducationIcon />,
     },
     {

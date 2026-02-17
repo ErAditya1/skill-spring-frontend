@@ -71,7 +71,7 @@ export default function MarketingCourseCard({ _id }: Props) {
   
 
   return (
-    // <Link href={`/auth/courses/${_id}`} key={_id}>
+    // <Link href={`/courses/${_id}`} key={_id}>
       <Card className={`dark:bg-card text-card-foreground p-0 shadow-lg h-full ${courseData?.isEnrolled && 'border border-green-700  shadow-green-700'}`}>
         <CardOverflow>
           <AspectRatio ratio="2">

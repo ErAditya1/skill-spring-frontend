@@ -63,6 +63,6 @@ export const NAV_LINKS = [
     // },
     {
         title: "Contact Us",
-        href: "/auth/countact-us",
+        href: "/contact",
     },
 ];

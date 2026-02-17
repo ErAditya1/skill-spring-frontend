@@ -9,7 +9,7 @@ export const usernameValidation = z
 export const signUpSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
   username: usernameValidation,
-  role: z.enum(['student', 'instructor'], { message: 'Role must be either student or instructor' }),
+  role: z.enum(['student', 'teacher'], { message: 'Role must be either student or instructor' }),
   email: z.string().email({ message: 'Invalid email address' }).min(1, { message: 'Email is required' }),
   password: z
   .string()

@@ -6,16 +6,14 @@ import { MdOutlineCloudOff } from 'react-icons/md';
 import { toast } from '@/components/ui/use-toast';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginUser, logoutUser } from '@/store/user/userSlice';
-import { AxiosError } from 'axios';
 import api from '@/api';
 import { usePathname, useRouter } from 'next/navigation';
 import { handleSidebar } from '@/store/setting/settingSlice';
-import { selectChat } from '@/store/chat/chatSlice';
 import { v4 as uuidv4 } from 'uuid';
 
-/* ---------------------------------- */
+/* ===================================== */
 /* Loading Screen */
-/* ---------------------------------- */
+/* ===================================== */
 
 export function LoadingScreen({
   message,
@@ -23,18 +21,16 @@ export function LoadingScreen({
   size = 50,
 }: any) {
   return (
-    <div
-      className={`bg-background text-foreground flex justify-center items-center ${className}`}
-    >
+    <div className={`bg-background text-foreground flex justify-center items-center ${className}`}>
       <FaSpinner className="animate-spin mx-4" size={size} />
       {message}
     </div>
   );
 }
 
-/* ---------------------------------- */
+/* ===================================== */
 /* Offline Screen */
-/* ---------------------------------- */
+/* ===================================== */
 
 function NoNetworkScreen() {
   return (
@@ -45,62 +41,94 @@ function NoNetworkScreen() {
   );
 }
 
-/* ---------------------------------- */
-/* Core Page Wrapper */
-/* ---------------------------------- */
+/* ===================================== */
+/* Core Wrapper */
+/* ===================================== */
 
 function Page({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
 
-  const { isLoggedIn, user } = useAppSelector((state) => state.auth);
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
   const [showOffline, setShowOffline] = useState(false);
 
-  /* ---------------------------------- */
-  /* Public Routes */
-  /* ---------------------------------- */
+  /* ===================================== */
+  /* ROUTE GROUPS */
+  /* ===================================== */
 
-  const isPublicPath = useMemo(
-    () =>
-      ['/auth', '/sign-in', '/sign-up', '/verify', '/reset-password'].some(
-        (path) => pathname.startsWith(path)
-      ),
-    [pathname]
-  );
+  // Auth-only pages (should NOT be accessible if logged in)
+  const authRoutes = [
+    '/auth/sign-in',
+    '/auth/sign-up',
+    '/auth/verify',
+    '/auth/reset-password',
+  ];
 
-  const commonPath = useMemo(
-    () =>
-      ['/terms-services', '/privacy-policy', '/support'].some((path) =>
-        pathname.startsWith(path)
-      ),
-    [pathname]
-  );
+  // Public pages (accessible to everyone)
+  const publicRoutes = [
+    '/',
+    '/courses',
+    '/about',
+    '/contact',
+    '/privacy',
+    '/terms',
+    '/refund',
+  ];
 
-  /* ---------------------------------- */
-  /* Fetch Current User (Cookie Based) */
-  /* ---------------------------------- */
+  
+const isPublicRoute = publicRoutes.some((path) => {
+  if (path === '/') {
+    return pathname === '/'; // exact match only
+  }
+  return pathname === path || pathname.startsWith(path + '/');
+});
+  
+  const isAuthRoute = pathname.startsWith('/auth/')
+  const isProfileRoute = pathname.startsWith('/profile');
+  const isAdminRoute = pathname.startsWith('/admin');
+  const isTeacherRoute = pathname.startsWith('/teacher');
+  const isStudentRoute = pathname.startsWith('/student');
+
+  /* ===================================== */
+  /* Redirect Helper */
+  /* ===================================== */
+
+  const redirectByRole = (role: string) => {
+    if (role === 'admin') return '/admin';
+    if (role === 'teacher') return '/teacher';
+    if (role === 'student') return '/student';
+    return '/';
+  };
+
+  /* ===================================== */
+  /* Fetch Current User */
+  /* ===================================== */
 
   const getCurrentUser = async () => {
-    console.log("loading current user")
-    setLoading(true);
     try {
       const response = await api.get('/v1/users/current-user');
-
       const currentUser = response.data.data.user;
-      
+
       dispatch(loginUser(currentUser));
 
-      if (isPublicPath) {
-        router.replace('/');
+      // 🚫 If logged in & trying to access auth page → redirect
+      if (isAuthRoute) {
+        router.replace(redirectByRole(currentUser.role));
       }
+
     } catch (error) {
       dispatch(logoutUser());
 
-      if (!isPublicPath && !commonPath) {
+      // 🔒 If not logged in & accessing protected route → redirect to login
+      if (
+        (isProfileRoute ||
+        isAdminRoute ||
+        isTeacherRoute ||
+        isStudentRoute ) && !isPublicRoute && !isAuthRoute
+      ) {
         router.replace('/auth/sign-in');
       }
     } finally {
@@ -108,20 +136,20 @@ function Page({ children }: { children: React.ReactNode }) {
     }
   };
 
-  /* ---------------------------------- */
+  /* ===================================== */
   /* Initial Auth Check */
-  /* ---------------------------------- */
+  /* ===================================== */
 
   useEffect(() => {
     getCurrentUser();
   }, []);
 
-  /* ---------------------------------- */
-  /* Role-Based Route Protection */
-  /* ---------------------------------- */
+  /* ===================================== */
+  /* Role Protection */
+  /* ===================================== */
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || isPublicRoute) return;
 
     const denyAccess = () => {
       toast({
@@ -129,31 +157,27 @@ function Page({ children }: { children: React.ReactNode }) {
         description: 'You are not authorized to access this page.',
         variant: 'destructive',
       });
-      router.replace('/auth');
+
+      router.replace(redirectByRole(user.role));
     };
 
-    if (pathname.startsWith('/admin') && user.role !== 'admin') {
+    if (isAdminRoute && user.role !== 'admin') {
       denyAccess();
     }
 
-    if (
-      pathname.startsWith('/teacher') &&
-      user.role !== 'teacher'
-    ) {
+    if (isTeacherRoute && user.role !== 'teacher') {
       denyAccess();
     }
 
-    if (
-      pathname.startsWith('/student') &&
-      user.role !== 'student'
-    ) {
+    if (isStudentRoute && user.role !== 'student') {
       denyAccess();
     }
+
   }, [pathname, user]);
 
-  /* ---------------------------------- */
+  /* ===================================== */
   /* Online / Offline Detection */
-  /* ---------------------------------- */
+  /* ===================================== */
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -182,9 +206,9 @@ function Page({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timeout);
   }, [isOnline]);
 
-  /* ---------------------------------- */
-  /* Unique Device ID Setup */
-  /* ---------------------------------- */
+  /* ===================================== */
+  /* Unique Device ID */
+  /* ===================================== */
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -199,14 +223,12 @@ function Page({ children }: { children: React.ReactNode }) {
       }`;
     }
 
-    dispatch(handleSidebar(window.screen.width >= 900));
+    dispatch(handleSidebar(window.innerWidth >= 900));
   }, []);
 
-
-
-  /* ---------------------------------- */
+  /* ===================================== */
   /* Final Render */
-  /* ---------------------------------- */
+  /* ===================================== */
 
   if (loading)
     return (
@@ -218,9 +240,10 @@ function Page({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-/* ---------------------------------- */
+
+/* ===================================== */
 /* Suspense Wrapper */
-/* ---------------------------------- */
+/* ===================================== */
 
 export default function UserContext({
   children,
@@ -233,5 +256,3 @@ export default function UserContext({
     </Suspense>
   );
 }
-
-

@@ -23,7 +23,6 @@ import { AxiosError } from 'axios';
 import { EyeIcon, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signUpSchema } from '@/schemas/signUpSchema';
-import BottomGradient from '@/components/BottomGradient';
 import api from '@/api';
 import Image from 'next/image';
 
@@ -112,14 +111,14 @@ export default function SignUpForm() {
               alt="Skill Spring logo"
               width={120}
               height={120}
-              className="w-full h-full p-2 hidden dark:block"
+              className="w-full h-full p-2 hidden dark:block rounded-full"
             />
             <Image
               src='/skillspringLight.png'
               alt="Skill Spring logo"
               width={120}
               height={120}
-              className="w-full h-full p-2 block dark:hidden"
+              className="w-full h-full p-2 block dark:hidden rounded-full"
             />
           </div>
 
@@ -223,8 +222,8 @@ export default function SignUpForm() {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="instructor" id="instructor" />
-                      <label htmlFor="instructor">Instructor</label>
+                      <RadioGroupItem value="teacher" id="teacher" />
+                      <label htmlFor="teacher">Instructor</label>
                     </div>
                   </RadioGroup>
                   <FormMessage />

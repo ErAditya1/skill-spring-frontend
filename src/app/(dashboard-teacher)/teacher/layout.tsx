@@ -1,45 +1,33 @@
-
-import React from 'react'
-
-import Box from '@mui/joy/Box';
-import Sidebar from '../../../components/Sidebar';
-import Header from '../../../components/Header';
-import Footer from '@/components/Footer';
-import Navbar from '@/components/Navbar';
-import TeacherHeader from '../components/TeacherHeader';
-import TeacherSidebar from '../components/TeacherSidebar';
+'use client'
+import React from "react";
+import Box from "@mui/joy/Box";
+import TeacherHeader from "../components/TeacherHeader";
+import TeacherSidebar from "../components/TeacherSidebar";
+import { useAppSelector } from "@/store/hooks";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { isSideBar } = useAppSelector((state) => state.setting);
 
-    return (
+  return (
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <TeacherHeader />
+      <TeacherSidebar />
 
-        <Box sx={{ display: 'flex', minHeight: '100dvh' }} >
-            <TeacherSidebar />
-            <TeacherHeader />
-
-            <Box
-                component="main"
-                sx={{
-
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: 0,
-                    height: '100dvh',
-                    gap: 1,
-                    overflow: 'auto',
-                }}
-                className="mt-[60px]  br:m-0 MainContent"
-            >
-                <Navbar />
-                {children}
-
-                <Footer />
-            </Box>
-
-        </Box>
-
-    )
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          minHeight: "100vh",
+          overflow: "auto",
+          ml: isSideBar ? "240px" : "70px",
+          transition: "margin-left 0.3s ease",
+        }}
+        className="mt-[52px] p-6"
+      >
+        {children}
+      </Box>
+    </Box>
+  );
 }
 
-export default DashboardLayout
+export default DashboardLayout;

@@ -21,7 +21,7 @@ const MobileNavbar = () => {
   const handleClose = () => setIsOpen(false);
 
   // 🔒 Hide completely if user is logged in
-  if (user) return null;
+ 
 
   return (
     <div className="flex lg:hidden items-center justify-end">
@@ -42,7 +42,23 @@ const MobileNavbar = () => {
           <div className="flex flex-col gap-6 mt-10">
 
             {/* AUTH BUTTONS */}
-            <div className="flex flex-col gap-3">
+           {
+            user ?
+            (
+               <div className="flex flex-col gap-3">
+              
+
+              <Link
+                href={user.role === "admin" ? "/admin" : user.role === "teacher" ? "/teacher" : "/student"}
+                onClick={handleClose}
+                className={buttonVariants({
+                  className: "w-full",
+                })}
+              >
+                Dashboard
+              </Link>
+            </div>
+            ):( <div className="flex flex-col gap-3">
               <Link
                 href="/auth/sign-in"
                 onClick={handleClose}
@@ -63,7 +79,8 @@ const MobileNavbar = () => {
               >
                 Get Started
               </Link>
-            </div>
+            </div>)
+           }
 
             {/* NAV LINKS */}
             <div className="flex flex-col gap-4 pt-4 border-t">
@@ -75,13 +92,9 @@ const MobileNavbar = () => {
                 Browse Courses
               </Link>
 
-              <Link href="/categories" onClick={handleClose} className="text-lg font-medium">
-                Categories
-              </Link>
+              
 
-              <Link href="/teacher" onClick={handleClose} className="text-lg font-medium">
-                Become Instructor
-              </Link>
+              
             </div>
 
             {/* THEME TOGGLE */}

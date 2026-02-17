@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+
 import React, { useEffect, useState } from "react";
 import {
   NavigationMenu,
@@ -17,6 +17,7 @@ import MobileNavbar from "./mobile-navbar";
 import { useAppSelector } from "@/store/hooks";
 import ColorSchemeToggle from "@/components/ColorSchemeToggle";
 import Image from "next/image";
+import Link from "next/link";
 
 const Navbar = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -46,7 +47,7 @@ const Navbar = () => {
           
           {/* LEFT SIDE */}
           <div className="flex items-center space-x-10">
-            <Link href="/auth" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/skillspringLight.png"
                 alt="SkillSpring"
@@ -67,7 +68,7 @@ const Navbar = () => {
               <NavigationMenuList>
 
                 <NavigationMenuItem>
-                  <Link href="/auth/courses" legacyBehavior passHref>
+                  <Link href="/courses" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
@@ -76,28 +77,9 @@ const Navbar = () => {
                   </Link>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem>
-                  <Link href="/categories" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Categories
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
+                
 
-                {/* Only show Become Instructor if NOT teacher/admin */}
-                {!isTeacher && !isAdmin && (
-                  <NavigationMenuItem>
-                    <Link href="/teacher" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        Become Instructor
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                )}
+              
 
               </NavigationMenuList>
             </NavigationMenu>
@@ -128,7 +110,7 @@ const Navbar = () => {
             {/* Student */}
             {isStudent && (
               <Link
-                href="/student/dashboard"
+                href="/student"
                 className={buttonVariants({ size: "sm" })}
               >
                 My Courses
@@ -138,7 +120,7 @@ const Navbar = () => {
             {/* Teacher */}
             {isTeacher && (
               <Link
-                href="/teacher/dashboard"
+                href="/teacher"
                 className={buttonVariants({ size: "sm" })}
               >
                 Teacher Dashboard
@@ -148,7 +130,7 @@ const Navbar = () => {
             {/* Admin */}
             {isAdmin && (
               <Link
-                href="/admin/dashboard"
+                href="/admin"
                 className={buttonVariants({ size: "sm" })}
               >
                 Admin Panel

@@ -1,3 +1,5 @@
+import React from "react";
+
 const Table = ({
   columns,
   renderRow,
@@ -8,17 +10,44 @@ const Table = ({
   data: any[];
 }) => {
   return (
-    <div className="w-full overflow-auto" key={Date.now()}>
-      <table className="w-full mt-4">
-      <thead>
-        <tr className="text-left aaa bg-gray-200 dark:bg-gray-900 h-10 p-4 mx-2 gap-4 text-sm">
-          {columns?.map((col) => (
-            <th key={col.accessor} className={`${col.className} break-keep text-nowrap px-4 `}>{col.header}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody >{data?.map((item) => renderRow(item))}</tbody>
-    </table>
+    <div className="w-full rounded-xl border bg-card shadow-sm overflow-hidden">
+      
+      {/* Scroll Wrapper */}
+      <div className="w-full overflow-x-auto">
+        <table className="w-full text-sm">
+
+          {/* Header */}
+          <thead className="bg-muted/60 sticky top-0 z-10">
+            <tr className="text-left border-b">
+              {columns.map((col) => (
+                <th
+                  key={col.accessor}
+                  className={`px-4 py-3 font-medium text-muted-foreground ${col.className}`}
+                >
+                  {col.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          {/* Body */}
+          <tbody className="divide-y">
+            {data && data.length > 0 ? (
+              data.map((item) => renderRow(item))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="text-center py-12 text-muted-foreground"
+                >
+                  No data available
+                </td>
+              </tr>
+            )}
+          </tbody>
+
+        </table>
+      </div>
     </div>
   );
 };

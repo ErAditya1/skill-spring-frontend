@@ -68,6 +68,24 @@ api.interceptors.response.use(
 /* LOGOUT HANDLER */
 /* ---------------------------------- */
 
+ const publicRoutes = [
+    '/',
+    '/courses',
+    '/about',
+    '/contact',
+    '/privacy',
+    '/terms',
+    '/refund',
+  ];
+
+  
+const isPublicRoute = publicRoutes.some((path) => {
+  if (path === '/') {
+    return window.location.pathname === '/'; // exact match only
+  }
+  return window.location.pathname === path || window.location.pathname.startsWith(path + '/');
+});
+
 function handleLogout() {
   if (typeof window !== "undefined") {
     // Optional: call backend logout endpoint
@@ -75,7 +93,7 @@ function handleLogout() {
       withCredentials: true,
     });
 
-    if (!window.location.pathname.startsWith("/auth")) {
+    if (!window.location.pathname.startsWith("/auth") && !isPublicRoute) {
       window.location.href = "/auth/sign-in";
     }
   }

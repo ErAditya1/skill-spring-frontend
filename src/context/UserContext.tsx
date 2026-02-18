@@ -71,6 +71,7 @@ function Page({ children }: { children: React.ReactNode }) {
   const publicRoutes = [
     '/',
     '/courses',
+    '/watch',
     '/about',
     '/contact',
     '/privacy',

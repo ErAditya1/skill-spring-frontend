@@ -38,6 +38,7 @@ export default function TeacherSidebar() {
       icon: <DollarSign size={18} />,
     },
     { label: "Profile", href: "/teacher/profile", icon: <FaceIcon /> },
+    { label: "Edit Profile", href: "/teacher/edit-profile", icon: <FaceIcon /> },
   ];
 
   return (

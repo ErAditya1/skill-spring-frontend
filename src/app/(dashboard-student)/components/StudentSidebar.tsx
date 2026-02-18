@@ -59,14 +59,15 @@ export default function StudentSidebar() {
       href: "/student/my-courses",
       icon: <CastForEducationIcon />,
     },
-    {
-      label: "Assignments",
-      href: "/student/course/:id",
-      icon: <AssignmentIcon />,
-    },
+   
     {
       label: "Profile",
       href: "/student/profile",
+      icon: <FaceIcon />,
+    },
+    {
+      label: "Edit Profile",
+      href: "/student/edit-profile",
       icon: <FaceIcon />,
     },
   ];

@@ -1,8 +1,8 @@
 
+// import EditProfile from '@/components/EditProfile';
 import dynamic from 'next/dynamic'
 import React from 'react'
-// import EditProfile from '../components/EditProfile'
-const EditProfile = dynamic(()=> import ('../../../../../components/EditProfile') ,{
+const EditProfile = dynamic(()=> import ('@/components/EditProfile') ,{
   loading: () => <h1>Loading...</h1>,
 })
 

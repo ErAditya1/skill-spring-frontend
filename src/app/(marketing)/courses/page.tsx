@@ -72,6 +72,8 @@ export default function CoursesPage() {
           },
         });
 
+        console.log(res)
+
         setCourses(res.data.data);
       } catch (err) {
         console.error(err);

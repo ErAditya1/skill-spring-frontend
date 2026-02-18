@@ -24,7 +24,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 /* ---------------------------------- */
@@ -37,10 +37,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // If access token expired
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -48,12 +45,11 @@ api.interceptors.response.use(
         await axios.patch(
           `${API_URL}/v1/users/refresh-token`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         // Retry original request
         return api(originalRequest);
-
       } catch (refreshError) {
         handleLogout();
         return Promise.reject(refreshError);
@@ -61,37 +57,43 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 /* ---------------------------------- */
 /* LOGOUT HANDLER */
 /* ---------------------------------- */
 
- const publicRoutes = [
-    '/',
-    '/courses',
-    '/about',
-    '/contact',
-    '/privacy',
-    '/terms',
-    '/refund',
-  ];
-
-  
-const isPublicRoute = publicRoutes.some((path) => {
-  if (path === '/') {
-    return window.location.pathname === '/'; // exact match only
-  }
-  return window.location.pathname === path || window.location.pathname.startsWith(path + '/');
-});
+const publicRoutes = [
+  "/",
+  "/courses",
+  "/watch",
+  "/about",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/refund",
+];
 
 function handleLogout() {
   if (typeof window !== "undefined") {
-    // Optional: call backend logout endpoint
-    axios.post(`${API_URL}/v1/users/logout`, {}, {
-      withCredentials: true,
+    const isPublicRoute = publicRoutes.some((path) => {
+      if (path === "/") {
+        return window.location.pathname === "/"; // exact match only
+      }
+      return (
+        window.location.pathname === path ||
+        window.location.pathname.startsWith(path + "/")
+      );
     });
+    // Optional: call backend logout endpoint
+    axios.post(
+      `${API_URL}/v1/users/logout`,
+      {},
+      {
+        withCredentials: true,
+      },
+    );
 
     if (!window.location.pathname.startsWith("/auth") && !isPublicRoute) {
       window.location.href = "/auth/sign-in";

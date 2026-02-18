@@ -4,10 +4,10 @@ import { CircularProgress } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/api';
 import { Button } from '@/components/ui/button';
-import QuizResults from '../../../(courses)/components/quiz/QuizResults';
 import { motion } from "framer-motion";
 import { toast } from '@/components/ui/use-toast';
 import { AxiosError } from 'axios';
+import QuizResults from '@/app/(dashboard-student)/student/(routes)/(courses)/components/quiz/QuizResults';
 
 const QuizPage = () => {
   const router = useRouter();

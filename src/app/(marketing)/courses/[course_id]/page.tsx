@@ -222,7 +222,7 @@ function ExploreCourse() {
             <h3 className="font-semibold mb-4">Course Content</h3>
 
             <div className="divide-y">
-              {course.chapters?.map((video: any, index: number) => (
+              {course?.chapters?.map((video: any, index: number) => (
                 <div
                   key={video._id}
                   className="flex justify-between items-center p-3 hover:bg-muted/40 cursor-pointer transition"

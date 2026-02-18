@@ -120,7 +120,7 @@ const RazorpayCheckout = () => {
                     description: response.data.message,
                     variant:'success',
                 });
-                router.push(`/courses/${course}`)
+                router.push(`/student/courses/${course}`)
             })
            .catch((err) => {
                 console.error(err)

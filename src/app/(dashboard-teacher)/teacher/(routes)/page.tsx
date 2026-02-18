@@ -168,7 +168,7 @@ export default function InstructorDashboard() {
 
                 <div className="flex gap-2">
                   {course.status === "approved" && (
-                    <Link href={`/course/${course._id}`}>
+                    <Link href={`/courses/${course._id}`}>
                       <Button variant="outline" size="sm">
                         <Eye className="w-4 h-4 mr-2" />
                         View

@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const API_URL =
   process.env.NODE_ENV === "production"
-    ? "https://skill-spring-backend.onrender.com"
+    ? "https://skill-spring-backend.onrender.com/api"
     : "http://localhost:8000/api";
 
 const api = axios.create({

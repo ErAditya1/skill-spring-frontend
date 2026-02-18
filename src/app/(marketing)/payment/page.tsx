@@ -167,10 +167,10 @@ const RazorpayCheckout = () => {
                         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                         amount: order.amount,
                         currency: 'INR',
-                        name: 'Bright Veil',
+                        name: 'SkillSpring',
                         description: 'Transaction of course purchase',
                         order_id: order.id,
-                        image:"/brightveilLight.jpg",
+                        image:"/skillspringLight.png",
                         handler:  async (response: any) =>{
                             await verifyAndEnrollCourse({...response,amount: order.amount,})
                             

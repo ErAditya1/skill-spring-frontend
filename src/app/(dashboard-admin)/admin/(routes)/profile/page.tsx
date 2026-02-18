@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Activity,
 } from 'lucide-react'
+import { FaUserCircle } from 'react-icons/fa'
 
 interface AdminType {
   _id: string
@@ -44,10 +45,14 @@ export default function AdminProfile() {
   useEffect(() => {
     api.get('/v1/admin/profile')
       .then(res => {
+        console.log(res)
         setAdmin(res.data.data)
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((err) => {
+        setLoading(false)
+        console.log(err)
+      })
   }, [])
 
   if (loading) return <AdminSkeleton />
@@ -61,14 +66,14 @@ export default function AdminProfile() {
       <Card className="rounded-2xl p-6 flex items-center gap-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
 
         <div className="w-24 h-24 rounded-full overflow-hidden bg-white relative">
-          {admin.avatar?.url && (
+          {admin.avatar?.url ? (
             <Image
               src={admin.avatar.url}
               alt="Admin"
               fill
               className="object-cover"
             />
-          )}
+          ):                <FaUserCircle className="w-full h-full text-gray-400" />}
         </div>
 
         <div className="space-y-2">

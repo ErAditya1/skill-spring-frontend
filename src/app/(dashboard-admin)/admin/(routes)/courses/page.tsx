@@ -196,7 +196,7 @@ export default function CourseApprovalPage() {
                             variant="outline"
                             size="sm"
                             onClick={() =>
-                              router.push(`/course/${course._id}`)
+                              router.push(`/courses/${course._id}`)
                             }
                           >
                             <Eye className="w-4 h-4 mr-2" />

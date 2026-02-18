@@ -45,6 +45,7 @@ export default function AdminSidebar() {
     { label: "Users", href: "/admin/users", icon: <AssignmentIcon /> },
     { label: "Categories", href: "/admin/categories", icon: <BiCategoryAlt /> },
     { label: "Profile", href: "/admin/profile", icon: <FaceIcon /> },
+    { label: "Edit Profile", href: "/admin/edit-profile", icon: <FaceIcon /> },
   ];
 
   return (
@@ -67,7 +68,7 @@ export default function AdminSidebar() {
         borderColor: "divider",
         zIndex: 1200,
       }}
-      className="bg-card"
+      className="dark:bg-card"
     >
       <List size="sm" sx={{ gap: 1, p: 1 }}>
         {menuItems.map((item, index) => (

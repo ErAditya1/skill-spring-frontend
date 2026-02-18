@@ -56,7 +56,7 @@ export default function TeacherSidebar() {
         borderColor: "divider",
         zIndex: 1200,
       }}
-      className="bg-card"
+      className="dark:bg-card"
     >
       <List size="sm" sx={{ gap: 1, p: 1 }}>
         {menuItems.map((item, index) => (

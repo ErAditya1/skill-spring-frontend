@@ -34,12 +34,13 @@ export default function InstructorDashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* ---------------- Fetch Courses ---------------- */
-
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await api.get("/v1/courses/course/getTeacherCourses");
+        setLoading(true);
+        const res = await api.get(
+          "/v1/courses/teacher/getTeacherCourses"
+        );
         setCourses(res.data.data);
       } catch (error) {
         console.log(error);
@@ -51,23 +52,21 @@ export default function InstructorDashboard() {
     fetchCourses();
   }, []);
 
-  /* ---------------- Calculations ---------------- */
+  /* ================= CALCULATIONS ================= */
 
   const totalStudents = courses.reduce(
-    (sum, course) => sum + (course.students || 0),
+    (sum, c) => sum + (c.students || 0),
     0
   );
 
   const totalRevenue = courses.reduce(
-    (sum, course) => sum + (course.revenue || 0),
+    (sum, c) => sum + (c.revenue || 0),
     0
   );
 
   const approvedCourses = courses.filter(
     (c) => c.status === "approved"
   ).length;
-
-  /* ---------------- Loading UI ---------------- */
 
   if (loading) {
     return (
@@ -81,7 +80,7 @@ export default function InstructorDashboard() {
     <div className="max-w-7xl mx-auto px-6 py-6">
 
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-semibold">
             Welcome back, {user?.name}
@@ -102,68 +101,37 @@ export default function InstructorDashboard() {
       {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-sm">
-              Total Courses
-            </span>
-            <BookOpen size={18} />
-          </div>
-          <h3 className="text-2xl font-semibold mt-2">
-            {courses.length}
-          </h3>
-        </div>
+        <StatCard
+          label="Total Courses"
+          value={courses.length}
+          icon={<BookOpen size={18} />}
+        />
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-sm">
-              Total Students
-            </span>
-            <Users size={18} />
-          </div>
-          <h3 className="text-2xl font-semibold mt-2">
-            {totalStudents.toLocaleString()}
-          </h3>
-        </div>
+        <StatCard
+          label="Total Students"
+          value={totalStudents.toLocaleString()}
+          icon={<Users size={18} />}
+        />
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-sm">
-              Total Revenue
-            </span>
-            <DollarSign size={18} />
-          </div>
-          <h3 className="text-2xl font-semibold mt-2">
-            ₹{totalRevenue.toLocaleString()}
-          </h3>
-        </div>
+        <StatCard
+          label="Total Revenue"
+          value={`₹${totalRevenue.toLocaleString()}`}
+          icon={<DollarSign size={18} />}
+        />
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-sm">
-              Approved Courses
-            </span>
-            <TrendingUp size={18} />
-          </div>
-          <h3 className="text-2xl font-semibold mt-2">
-            {approvedCourses}
-          </h3>
-        </div>
+        <StatCard
+          label="Approved Courses"
+          value={approvedCourses}
+          icon={<TrendingUp size={18} />}
+        />
+
       </div>
 
       {/* COURSE LIST */}
       <div className="rounded-xl border bg-card p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold">
-            Your Courses
-          </h2>
-
-          <Link href="/teacher/courses">
-            <Button variant="outline" size="sm">
-              View All
-            </Button>
-          </Link>
-        </div>
+        <h2 className="text-lg font-semibold mb-6">
+          Your Courses
+        </h2>
 
         {courses.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground">
@@ -174,53 +142,31 @@ export default function InstructorDashboard() {
             {courses.map((course) => (
               <div
                 key={course._id}
-                className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border rounded-lg hover:bg-muted/40 transition"
+                className="flex justify-between p-4 border rounded-lg hover:bg-muted/40 transition"
               >
-                <div className="flex-1">
-
+                <div>
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold">
                       {course.title}
                     </h3>
 
-                    {/* STATUS BADGE */}
-                    <Badge
-                      className={`
-                        ${course.status === "approved" && "bg-green-100 text-green-700 border-green-300"}
-                        ${course.status === "pending" && "bg-yellow-100 text-yellow-700 border-yellow-300"}
-                        ${course.status === "draft" && "bg-gray-100 text-gray-600 border-gray-300"}
-                        ${course.status === "rejected" && "bg-red-100 text-red-700 border-red-300"}
-                      `}
-                    >
+                    <Badge>
                       {course.status}
                     </Badge>
                   </div>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground flex gap-4">
+                    <span>{course.students} students</span>
                     <span>
-                      {course.students || 0} students
+                      ₹{course.revenue?.toLocaleString() || 0}
                     </span>
-
-                    {course.status === "approved" && (
-                      <>
-                        <span>
-                          ₹{course.revenue?.toLocaleString() || 0}
-                        </span>
-                        <span>
-                          ⭐ {course.rating || "4.8"}
-                        </span>
-                      </>
-                    )}
-
                     <span>
-                      Updated {new Date(course.updatedAt).toLocaleDateString()}
+                      ⭐ {course.rating || 0}
                     </span>
                   </div>
                 </div>
 
-                {/* ACTIONS */}
                 <div className="flex gap-2">
-
                   {course.status === "approved" && (
                     <Link href={`/course/${course._id}`}>
                       <Button variant="outline" size="sm">
@@ -230,13 +176,14 @@ export default function InstructorDashboard() {
                     </Link>
                   )}
 
-                  <Link href={`/teacher/courses/edit-course/${course._id}`}>
+                  <Link
+                    href={`/teacher/courses/edit-course/${course._id}`}
+                  >
                     <Button size="sm">
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
                     </Button>
                   </Link>
-
                 </div>
               </div>
             ))}
@@ -246,3 +193,17 @@ export default function InstructorDashboard() {
     </div>
   );
 }
+
+const StatCard = ({ label, value, icon }: any) => (
+  <div className="rounded-xl border bg-card p-6 shadow-sm">
+    <div className="flex justify-between items-center">
+      <span className="text-muted-foreground text-sm">
+        {label}
+      </span>
+      {icon}
+    </div>
+    <h3 className="text-2xl font-semibold mt-2">
+      {value}
+    </h3>
+  </div>
+);

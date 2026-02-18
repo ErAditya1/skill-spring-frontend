@@ -6,36 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { StarIcon } from "lucide-react";
 import MaxWidthWrapper from "./components/global/max-width-wrapper";
-
-const COURSES = [
-  {
-    id: 1,
-    title: "Complete MERN Stack Bootcamp",
-    instructor: "Aditya Kumar",
-    price: 1999,
-    rating: 5,
-    lessons: 42,
-    thumbnail: "/assets/course1.jpg",
-  },
-  {
-    id: 2,
-    title: "Next.js Production Guide",
-    instructor: "Rahul Sharma",
-    price: 1499,
-    rating: 4,
-    lessons: 28,
-    thumbnail: "/assets/course2.jpg",
-  },
-  {
-    id: 3,
-    title: "React for Beginners",
-    instructor: "Anita Verma",
-    price: 999,
-    rating: 5,
-    lessons: 35,
-    thumbnail: "/assets/course3.jpg",
-  },
-];
+import api from "@/api";
+import React, { useState } from "react";
+import CourseCard from "../(dashboard-student)/student/(routes)/(courses)/components/CourseCard";
+import ReviewCard from "../(dashboard-student)/student/(routes)/(courses)/components/ReviewCard";
 
 const REVIEWS = [
   {
@@ -59,9 +33,44 @@ const REVIEWS = [
 ];
 
 export default function HomePage() {
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+
+      const res = await api.get("/v1/courses/course/getAllPublicCourses");
+
+      console.log(res);
+
+      setCourses(res.data.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const res = await api.get(`/v1/courses/course/review/all`);
+      setReviews(res.data.data);
+      console.log(res.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCourses();
+    fetchReviews();
+  }, []);
+
   return (
     <div className="mt-20">
-      
       <div className="flex flex-col w-full overflow-x-hidden">
         {/* HERO SECTION */}
         <section className="py-20 text-center bg-gradient-to-b from-background/80 to-muted">
@@ -103,41 +112,8 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {COURSES.map((course) => (
-                <Card key={course.id} className="hover:shadow-lg transition">
-                  <CardContent className="p-0">
-                    <Image
-                      src={course.thumbnail}
-                      alt={course.title}
-                      width={500}
-                      height={300}
-                      className="rounded-t-lg object-cover h-48 w-full"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg">{course.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {course.instructor}
-                      </p>
-                      <div className="flex items-center mt-2 gap-1">
-                        {Array.from({ length: course.rating }).map((_, i) => (
-                          <StarIcon
-                            key={i}
-                            className="w-4 h-4 fill-yellow-500 text-yellow-500"
-                          />
-                        ))}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {course.lessons} Lessons
-                      </p>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center">
-                    <span className="font-bold">₹{course.price}</span>
-                    <Button size="sm" asChild>
-                      <Link href={`/courses/${course.id}`}>View Course</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
+              {courses.map((course) => (
+                <CourseCard key={course._id} {...course} />
               ))}
             </div>
           </MaxWidthWrapper>

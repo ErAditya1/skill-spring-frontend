@@ -1,175 +1,200 @@
-"use client";
-import api from "@/api";
-import React, { useEffect, useState, useCallback } from "react";
-import CourseCard from "./(courses)/components/CourseCard";
-import VideoCard from "./(courses)/components/VideoCard";
-import PostCard from "@/components/PostCard";
-import { LoadingScreen } from "@/context/UserContext";
-import { HoverEffect } from "@/components/ui/card-hover-effect";
-import { Button } from "@/components/ui/button";
-import { BookOpen, Sparkles } from "lucide-react";
+'use client';
 
-function Home() {
-  const [recomendedData, setRecomendedData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [noMoreContent, setNoMoreContent] = useState(false);
-  const [enrolledCourse, setEnrolledCourse] = useState<any[]>([]);
+import React, { useEffect, useState } from 'react';
+import { BookOpen, Award, Clock, BarChart3 } from 'lucide-react';
+import api from '@/api';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
+import CourseCard from './(courses)/components/CourseCard';
 
-  /* ---------------------------------- */
-  /* Fetch Enrolled Courses */
-  /* ---------------------------------- */
+interface DashboardStats {
+  totalEnrolled: number;
+  completedCourses: number;
+  totalHours: number;
+  certificates: number;
+}
+
+export default function StudentDashboard() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
+  const [continueCourses, setContinueCourses] = useState<any[]>([]);
 
   useEffect(() => {
-    api
-      .patch(`/v1/courses/course/getEnrolledCourses`)
-      .then((res) => {
-        const data = res.data.data || [];
-        setEnrolledCourse(data);
-      })
-      .catch((error) => console.log(error));
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+
+        const res = await api.get('/v1/student/dashboard');
+
+        setStats(res.data.data.stats);
+        setEnrolledCourses(res.data.data.enrolledCourses);
+        setContinueCourses(res.data.data.continueLearning);
+
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
   }, []);
 
-  /* ---------------------------------- */
-  /* Fetch Recommended Content */
-  /* ---------------------------------- */
-
-  useEffect(() => {
-    setLoading(true);
-
-    api
-      .get(`/v1/comman/recomended?page=${page}`)
-      .then((res) => {
-        const data = res.data.data || [];
-
-        if (data.length > 0) {
-          setRecomendedData((prev) => [...prev, ...data]);
-        } else {
-          setNoMoreContent(true);
-        }
-      })
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
-  }, [page]);
-
-  /* ---------------------------------- */
-  /* Infinite Scroll */
-  /* ---------------------------------- */
-
-  const loadMoreContent = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && !loading && !noMoreContent) {
-        setPage((prev) => prev + 1);
-      }
-    },
-    [loading, noMoreContent]
-  );
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(loadMoreContent, {
-      rootMargin: "200px",
-    });
-
-    const sentinel = document.getElementById("sentinel");
-    if (sentinel) observer.observe(sentinel);
-
-    return () => {
-      if (sentinel) observer.unobserve(sentinel);
-    };
-  }, [loadMoreContent]);
-
-  /* ---------------------------------- */
-  /* Empty State */
-  /* ---------------------------------- */
-
-  const showEmpty =
-    !loading &&
-    enrolledCourse.length === 0 &&
-    recomendedData.length === 0;
+  if (loading || !stats) {
+    return (
+      <div className="flex items-center justify-center h-[70vh]">
+        <Skeleton className="h-8 w-40" />
+      </div>
+    );
+  }
 
   return (
-    <div className="text-foreground mt-4 px-4">
+    <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
 
-      {/* Section Title */}
-      <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="text-primary" />
-        <h2 className="text-xl font-semibold">Recommended For You</h2>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold">
+          Welcome back 👋
+        </h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          Continue your learning journey
+        </p>
       </div>
 
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {/* Enrolled Courses */}
-        {enrolledCourse.map((course, index) => (
-          <HoverEffect key={`enrolled-${index}`} index={index}>
-            <CourseCard _id={course?.course_Id} />
-          </HoverEffect>
-        ))}
+        <Card className="p-6 flex justify-between items-center">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Enrolled Courses
+            </p>
+            <h2 className="text-2xl font-bold mt-1">
+              {stats.totalEnrolled}
+            </h2>
+          </div>
+          <BookOpen className="text-primary" size={28} />
+        </Card>
 
-        {/* Recommended Content */}
-        {recomendedData.map((item, index) => {
-          if (item?.type === "video") {
-            return (
-              <HoverEffect key={index} index={index}>
-                <VideoCard _id={item?.contentId} />
-              </HoverEffect>
-            );
-          }
+        <Card className="p-6 flex justify-between items-center">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Completed Courses
+            </p>
+            <h2 className="text-2xl font-bold mt-1">
+              {stats.completedCourses}
+            </h2>
+          </div>
+          <Award className="text-green-600" size={28} />
+        </Card>
 
-          if (item?.type === "course") {
-            return (
-              <HoverEffect key={index} index={index}>
-                <CourseCard _id={item?.contentId} />
-              </HoverEffect>
-            );
-          }
+        <Card className="p-6 flex justify-between items-center">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Learning Hours
+            </p>
+            <h2 className="text-2xl font-bold mt-1">
+              {stats.totalHours}
+            </h2>
+          </div>
+          <Clock className="text-yellow-500" size={28} />
+        </Card>
 
-          if (item?.type === "post") {
-            return (
-              <HoverEffect key={index} index={index}>
-                <PostCard _id={item?.contentId} />
-              </HoverEffect>
-            );
-          }
+        <Card className="p-6 flex justify-between items-center">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Certificates
+            </p>
+            <h2 className="text-2xl font-bold mt-1">
+              {stats.certificates}
+            </h2>
+          </div>
+          <BarChart3 className="text-purple-600" size={28} />
+        </Card>
 
-          return null;
-        })}
       </div>
 
-      {/* Empty State UI */}
-      {showEmpty && (
-        <div className="flex flex-col items-center justify-center text-center py-20">
-          <BookOpen size={60} className="text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">
-            No Content Available Yet
-          </h3>
-          <p className="text-muted-foreground mb-6 max-w-md">
-            Start exploring courses and videos to build your learning journey.
-          </p>
-          <Button onClick={() => (window.location.href = "/courses")}>
-            Explore Courses
+      {/* Continue Learning */}
+      {continueCourses.length > 0 && (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold">
+              Continue Learning
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {continueCourses.map((course) => (
+              <Card
+                key={course._id}
+                className="p-4 space-y-4 hover:shadow-lg transition"
+              >
+                <h3 className="font-semibold line-clamp-2">
+                  {course.title}
+                </h3>
+
+                <Progress value={course.progress} />
+
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{course.progress}% Completed</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      router.push(`/courses/${course._id}`)
+                    }
+                  >
+                    Resume
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Enrolled Courses */}
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">
+            My Courses
+          </h2>
+
+          <Button
+            variant="outline"
+            onClick={() => router.push('/courses')}
+          >
+            Browse More
           </Button>
         </div>
-      )}
 
-      {/* Loading */}
-      {loading && !noMoreContent && (
-        <div className="flex justify-center mt-8">
-          <LoadingScreen message="Loading more content..." className="h-20" size={25} />
-        </div>
-      )}
+        {enrolledCourses.length === 0 ? (
+          <div className="text-center py-16 border rounded-lg">
+            <p className="text-muted-foreground">
+              You haven’t enrolled in any courses yet.
+            </p>
+            <Button
+              className="mt-4"
+              onClick={() => router.push('/courses')}
+            >
+              Explore Courses
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {enrolledCourses.map((course) => (
+              <CourseCard key={course._id} _id={course._id} />
+            ))}
+          </div>
+        )}
+      </div>
 
-      {/* End Message */}
-      {noMoreContent && recomendedData.length > 0 && (
-        <div className="text-center text-muted-foreground mt-8">
-          🎉 You've reached the end.
-        </div>
-      )}
-
-      <div id="sentinel" className="h-10"></div>
     </div>
   );
 }
-
-export default Home;

@@ -26,6 +26,7 @@ export default function MiniVideoCard({ videoId, thumbnail, title, _id, views, u
 
     const { v } = useParams()
 
+    const { course_id } = useParams()
 
 
 
@@ -33,7 +34,7 @@ export default function MiniVideoCard({ videoId, thumbnail, title, _id, views, u
     return (
         <Suspense fallback={<div>Loading...</div>} >
 
-            <Link href={`/watch/video/${videoId}`}>
+            <Link href={`/student/courses/${course_id}/${videoId}`}>
                 <div className="relative w-full h-24  p-2 z-0">
 
                     {

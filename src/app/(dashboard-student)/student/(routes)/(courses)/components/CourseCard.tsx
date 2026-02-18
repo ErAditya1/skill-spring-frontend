@@ -1,64 +1,33 @@
 'use client';
 
 import * as React from 'react';
-import CardContent from '@mui/joy/CardContent';
-
-import { Skeleton } from '@/components/ui/skeleton';
-import { BookOpen } from 'lucide-react';
 import Link from 'next/link';
-import { AspectRatio, Card, CardOverflow, Divider, Typography } from '@mui/joy';
+import Image from 'next/image';
+import { Card, CardContent } from '@mui/joy';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BookOpen, Star } from 'lucide-react';
 import api from '@/api';
 import AvatarLayout from '@/components/AvatarLayout';
-import { BiMoney } from 'react-icons/bi';
-import { toast } from '@/components/ui/use-toast';
+import { Badge } from '@/components/ui/badge';
 import { MdEventAvailable } from 'react-icons/md';
-import ValidatedImage from '@/components/ValidatedImage';
-import Image from 'next/image';
-
-type CourseData = {
-  thumbnail: {
-    secure_url: string;
-  };
-  title: string;
-  author: {
-    name: string;
-    avatar: {
-      url: string;
-    };
-    username: string;
-  };
-  chapterCount: number;
-  isFree: boolean;
-  isEnrolled: boolean;
-  sellingPrice: number;
-};
 
 type Props = {
   _id: string;
 };
 
 export default function CourseCard({ _id }: Props) {
-  const [courseData, setCourseData] = React.useState<CourseData>({
-    thumbnail: { secure_url: '' },
-    title: '',
-    author: { name: '', avatar: { url: '' }, username: '' },
-    chapterCount: 0,
-    isFree: false,
-    isEnrolled: false,
-    sellingPrice: 0,
-  });
-
+  const [courseData, setCourseData] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await api.get(`/v1/courses/course/getPublishedCourses/${_id}`);
+        const res = await api.get(
+          `/v1/courses/course/getPublishedCourses/${_id}`
+        );
         setCourseData(res.data.data[0]);
       } catch (error) {
-
-        console.log("Failed to fetch course data", error);
-        
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -67,107 +36,141 @@ export default function CourseCard({ _id }: Props) {
     if (_id) fetchData();
   }, [_id]);
 
-  
+  if (isLoading) {
+    return (
+      <Card className="p-0 shadow-md">
+        <Skeleton className="aspect-video w-full" />
+        <CardContent className="space-y-3">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3 w-2/3" />
+          <Skeleton className="h-3 w-1/2" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Link href={`/courses/${_id}`} key={_id}>
-      <Card className={`dark:bg-card text-card-foreground p-0 shadow-lg h-full ${courseData?.isEnrolled && 'border border-green-700  shadow-green-700'}`}>
-        <CardOverflow>
-          <AspectRatio ratio="2">
-            {isLoading ? (
-              <Skeleton className="w-full rounded animate-pulse" />
+    <Link href={`/courses/${_id}`}>
+
+      <Card
+        className={`group p-0 dark:bg-card overflow-hidden transition-all duration-300 hover:shadow-xl  border ${
+          courseData?.isEnrolled
+            ? 'border-green-500'
+            : 'border-border'
+        }`}
+      >
+        {/* Thumbnail */}
+        <div className="relative aspect-video overflow-hidden">
+          <Image
+            src={courseData?.thumbnail?.secure_url}
+            alt={courseData?.title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+
+          {/* Category Badge */}
+          {courseData?.category?.name && (
+            <div className="absolute top-3 left-3">
+              <Badge className="bg-primary text-primary-foreground text-xs">
+                {courseData.category.name}
+              </Badge>
+            </div>
+          )}
+
+          {/* Enrolled Badge */}
+          {courseData?.isEnrolled && (
+            <div className="absolute top-3 right-3">
+              <Badge className="bg-green-600 text-white text-xs">
+                Enrolled
+              </Badge>
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <CardContent className="p-4 space-y-2">
+
+          {/* Title */}
+          <h3 className="font-semibold text-sm line-clamp-2 leading-snug">
+            {courseData?.title}
+          </h3>
+
+          {/* Instructor */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <AvatarLayout
+              src={courseData?.author?.avatar?.url}
+              name={courseData?.author?.name}
+              className="h-6 w-6"
+            />
+            <span>{courseData?.author?.name}</span>
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1 text-xs">
+            <span className="font-semibold text-yellow-600">
+              {courseData?.rating?.toFixed(1)}
+            </span>
+
+            <div className="flex">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  size={14}
+                  className={
+                    i < courseData?.rating
+                      ? 'fill-yellow-500 text-yellow-500'
+                      : 'text-muted-foreground'
+                  }
+                />
+              ))}
+            </div>
+
+            <span className="text-muted-foreground">
+              ({courseData?.totalReviews})
+            </span>
+          </div>
+
+          {/* Chapters & Language */}
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <BookOpen size={14} />
+              {courseData?.chapterCount} Chapters
+            </div>
+            <span>{courseData?.language}</span>
+          </div>
+
+          {/* Price Section */}
+          <div className="flex items-center gap-2 pt-1">
+
+            {courseData?.sellingPrice === 0 ? (
+              <span className="font-bold text-green-600">
+                Free
+              </span>
             ) : (
-              <Image
-                src={courseData?.thumbnail?.secure_url }
-                loading="lazy"
-                width={500}
-                height={500}
-                alt={courseData?.title || 'Course Thumbnail'}
-              />
-            )}
-          </AspectRatio>
-        </CardOverflow>
-
-        <CardContent className="flex flex-row items-center w-full">
-          {isLoading ? (
-            <div className="flex flex-row flex-nowrap justify-between p-0 w-full">
-              <Skeleton className="h-12 w-12 rounded-full animate-pulse" />
-              <div className="space-y-2 w-full gap-2 pl-2">
-                <Skeleton className="h-4 w-full animate-pulse" />
-                <Skeleton className="h-4 w-full animate-pulse" />
-                <Skeleton className="h-4 w-[50%] animate-pulse" />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-row gap-2 w-full h-14 items-center">
-              <AvatarLayout
-                src={courseData?.author?.avatar?.url || '/fallback-avatar.png'}
-                name={courseData?.author?.name}
-              />
-              <div className="card-content flex justify-center flex-col">
-                <p  className="line-clamp-2 break-words text-sm sm:text-md ">
-                  {courseData?.title}
-                </p>
-                <p className="line-clamp-1 text-xs sm:text-md">
-                  @{courseData?.author?.username}
-                </p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-
-        <CardOverflow className="h-14">
-          <Divider inset="context" />
-          {isLoading ? (
-            <CardContent>
-              <div className="flex flex-row flex-nowrap justify-between items-center p-0">
-                <Skeleton className="w-16 h-5 rounded animate-pulse" />
-                <Skeleton className="w-12 h-5 rounded animate-pulse" />
-              </div>
-            </CardContent>
-          ) : (
-            <CardContent
-              orientation="horizontal"
-              className="flex items-center justify-between m-0 p-0"
-            >
-              <div className="flex flex-row items-center bg-background text-foreground p-1 rounded-lg text-xs">
-                <BookOpen className="mx-2" size={15} />
-                <span>{courseData?.chapterCount} Chapters</span>
-              </div>
-
-              {courseData?.isEnrolled ? (
-                <div className="flex flex-row items-center bg-background text-foreground p-1 rounded-lg text-xs">
-                  <MdEventAvailable className="mx-2" size={15} />
-                  <span>Enrolled</span>
-                </div>
-              )
-              :
               <>
-                {
-                  courseData?.sellingPrice > 0? (
-                    <div className="flex flex-row items-center bg-background text-foreground p-1 rounded-lg text-xs">
-                      <BiMoney className="mx-2" size={15} />
-                      <span>
-                      ₹{courseData?.sellingPrice.toFixed(2)}
-                        {courseData?.isFree? '(Free)' : ''}
-                      </span>
-                    </div>
-                  )
-                  : (
-                    <div className="flex flex-row items-center bg-background text-foreground p-1 rounded-lg text-xs line-clamp-1">
-                      <BiMoney className="mx-2" size={15} />
-                      <span>
-                        {courseData?.isFree? 'Free' : 'Price not available'}
-                      </span>
-                    </div>
-                  )
-                }
+                <span className="font-bold text-sm">
+                  ₹{courseData?.sellingPrice}
+                </span>
+
+                {courseData?.printPrice > courseData?.sellingPrice && (
+                  <>
+                    <span className="line-through text-xs text-muted-foreground">
+                      ₹{courseData?.printPrice}
+                    </span>
+
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px]"
+                    >
+                      {courseData?.discount}% OFF
+                    </Badge>
+                  </>
+                )}
               </>
-            
-            }
-            </CardContent>
-          )}
-        </CardOverflow>
+            )}
+          </div>
+
+        </CardContent>
       </Card>
     </Link>
   );

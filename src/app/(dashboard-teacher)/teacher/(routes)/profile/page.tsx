@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Star, Users, BookOpen } from 'lucide-react'
 import CourseCard from '@/app/(dashboard-student)/student/(routes)/(courses)/components/CourseCard'
+import { useAppSelector } from '@/store/hooks'
+import { FaUserCircle } from 'react-icons/fa'
 
 
 interface TeacherType {
@@ -29,12 +31,12 @@ interface TeacherType {
 }
 
 export default function TeacherProfile() {
-  const { username } = useParams()
+  
   const [loading, setLoading] = useState(true)
   const [teacher, setTeacher] = useState<TeacherType | null>(null)
-
+  const username = useAppSelector((state) => state.auth.user?.username)
   useEffect(() => {
-    if (!username) return
+    
 
     api.get(`/v1/users/teacher-profile/${username}`)
       .then(res => {
@@ -77,7 +79,8 @@ export default function TeacherProfile() {
                 fill
                 className="object-cover"
               />
-            ) : null}
+            ) :               <FaUserCircle className="w-full h-full text-gray-400" />
+            }
           </div>
 
           <div className="text-white space-y-2">

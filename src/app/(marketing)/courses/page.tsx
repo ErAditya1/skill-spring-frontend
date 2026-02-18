@@ -62,7 +62,7 @@ export default function CoursesPage() {
       try {
         setLoading(true);
 
-        const res = await api.get('/v1/courses/course/getAllCourses', {
+        const res = await api.get('/v1/courses/course/getAllPublicCourses', {
           params: {
             search: debouncedSearch,
             categories: selectedCategories.join(','),
@@ -193,7 +193,7 @@ export default function CoursesPage() {
       
 
       <div className="flex-1">
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className=" mx-auto px-6 py-10">
 
           {/* Header */}
           <div className="mb-10">
@@ -212,7 +212,8 @@ export default function CoursesPage() {
                 />
               </div>
 
-              <Select value={sortBy} onValueChange={setSortBy}>
+            <div className="flex gap-2">
+                <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue placeholder="Sort By" />
                 </SelectTrigger>
@@ -223,6 +224,20 @@ export default function CoursesPage() {
                   <SelectItem value="price-high">Price: High</SelectItem>
                 </SelectContent>
               </Select>
+              {/* Mobile Filter */}
+            <div className="lg:hidden  bottom-6 right-6 z-50">
+              <Sheet>
+                <SheetTrigger asChild className='flex items-center justify-center mt-2'>
+                   <SlidersHorizontal className="w-5 h-5 mr-2 my-auto" />
+                </SheetTrigger>
+                <SheetContent>
+                  <div className="mt-10">
+                    <FilterSidebar />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            </div>
             </div>
           </div>
 
@@ -239,22 +254,8 @@ export default function CoursesPage() {
               </div>
             </aside>
 
-            {/* Mobile Filter */}
-            <div className="lg:hidden fixed bottom-6 right-6 z-50">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button size="lg" className="rounded-full shadow-lg">
-                    <SlidersHorizontal className="w-5 h-5 mr-2" />
-                    Filters
-                  </Button>
-                </SheetTrigger>
-                <SheetContent>
-                  <div className="mt-10">
-                    <FilterSidebar />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+
+            
 
             {/* Course Grid */}
             <div className="flex-1">

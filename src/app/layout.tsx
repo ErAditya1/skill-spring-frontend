@@ -9,6 +9,7 @@ import { SocketProvider } from "@/context/SocketContext";
 
 import UserContext from "@/context/UserContext";
 import { Providers } from "./providers";
+import DynamicFavicon from "@/components/DynamicFavicon";
 
 
 
@@ -16,15 +17,55 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Skill Spring ",
-  description: "Skill Spring learning plateform developed by Aditya Kumar",
-
+  metadataBase: new URL("https://skillspring-sigma.vercel.app"),
+  title: {
+    default: "Skill Spring | Online Learning Platform",
+    template: "%s | Skill Spring",
+  },
+  description:
+    "Join Skill Spring, the leading online learning platform offering diverse courses in technology, business, and personal development.",
+  keywords: [
+    "online learning",
+    "Skill Spring",
+    "skill development",
+    "career growth",
+    "tech courses",
+    "business courses",
+  ],
+  authors: [{ name: "Aditya Kumar" }],
+  openGraph: {
+    title: "Skill Spring | Online Learning Platform",
+    description:
+      "Enhance your skills, advance your career, and learn at your own pace.",
+    url: "https://skillspring-sigma.vercel.app",
+    siteName: "Skill Spring",
+    images: [
+      {
+        url: "/skillspringLight.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Skill Spring | Online Learning Platform",
+    description:
+      "Enhance your skills, advance your career, and learn at your own pace.",
+    images: ["/skillspringLight.png"],
+  },
   icons: {
-    icon: "/skillspringLight.png",
-    apple: "/skillspringLight.png",
+    icon: [
+      { url: "/skillspringLight.png", media: "(prefers-color-scheme: light)" },
+      { url: "/skillspringDark.png", media: "(prefers-color-scheme: dark)" },
+    ],
     shortcut: "/skillspringLight.png",
+    apple: "/skillspringLight.png",
   },
 };
+
 
 export default function RootLayout({
   children,
@@ -56,7 +97,7 @@ export default function RootLayout({
           content="Join Skill Spring, the leading online learning platform offering diverse courses in technology, business, and personal development. Enhance your skills, advance your career, and learn at your own pace."
         />
         <meta property="og:image" content="/skillspringLight.png" /> {/* Optional image for social sharing */}
-        <meta property="og:url" content="https://skillspring.vercel.app" />
+        <meta property="og:url" content="https://skillspring-sigma.vercel.app" />
         <meta name="twitter:card" content="/skillspringLight.png" />
         <meta
           name="twitter:title"
@@ -98,6 +139,8 @@ export default function RootLayout({
             >
               <SocketProvider>
                 <UserContext>
+                  <DynamicFavicon />
+
 
                   {children}
                 </UserContext>

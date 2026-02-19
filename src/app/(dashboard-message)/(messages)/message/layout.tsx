@@ -14,7 +14,7 @@ export const metadata = {
       title: "Real-time Chat - Skill Spring Learning Platform",
       description: "Engage in real-time conversations with fellow learners and instructors on Skill Spring. Connect, share, and collaborate instantly!",
       image: "/skillspringLight.png", // Image for social media preview
-      url: "https://skillspring.vercel.app/chat", // Chat page URL
+      url: "https://skillspring-sigma.vercel.app/chat", // Chat page URL
       type: "website",
     },
   

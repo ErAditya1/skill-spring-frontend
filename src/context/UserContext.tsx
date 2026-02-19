@@ -162,6 +162,10 @@ const isPublicRoute = publicRoutes.some((path) => {
       router.replace(redirectByRole(user.role));
     };
 
+
+    if(isAuthRoute){
+      router.replace(redirectByRole(user.role));
+    }
     if (isAdminRoute && user.role !== 'admin') {
       denyAccess();
     }
@@ -173,7 +177,7 @@ const isPublicRoute = publicRoutes.some((path) => {
     if (isStudentRoute && user.role !== 'student') {
       denyAccess();
     }
-
+ 
   }, [pathname, user]);
 
   /* ===================================== */
@@ -231,10 +235,9 @@ const isPublicRoute = publicRoutes.some((path) => {
   /* Final Render */
   /* ===================================== */
 
-  if (loading)
-    return (
-      <LoadingScreen message="Verifying..." className="h-dvh w-screen" />
-    );
+  if (loading && !isPublicRoute && !isAuthRoute) {
+  return <LoadingScreen message="Verifying..." className="h-dvh w-screen" />;
+}
 
   if (!isOnline && showOffline) return <NoNetworkScreen />;
 
